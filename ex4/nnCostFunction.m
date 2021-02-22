@@ -1,4 +1,4 @@
-function [J grad] = nnCostFunction(nn_params, ...
+function [J, grad] = nnCostFunction(nn_params, ...
                                    input_layer_size, ...
                                    hidden_layer_size, ...
                                    num_labels, ...
@@ -24,7 +24,7 @@ Theta2 = reshape(nn_params((1 + (hidden_layer_size * (input_layer_size + 1))):en
 
 % Setup some useful variables
 m = size(X, 1);
-         
+
 % You need to return the following variables correctly 
 J = 0;
 Theta1_grad = zeros(size(Theta1));
@@ -61,16 +61,45 @@ Theta2_grad = zeros(size(Theta2));
 %               the regularization separately and then add them to Theta1_grad
 %               and Theta2_grad from Part 2.
 %
+y_vec = full(ind2vec(y'))';
+
+a1 = [ones(m,1) X];
+
+z2 = a1*(Theta1)';
+a2 = sigmoid(z2);
+a2 = [ones(m,1) a2];
+
+z3 = a2*(Theta2)';
+a3 = sigmoid(z3);
+h_X = a3;
+
+cost_vec = y_vec.*log(h_X) + (1-y_vec).*log(1-h_X);           % element wise cost for each labal for each m examples
+cost = -sum(cost_vec(:));                                   % sum of all costs
+
+theta1 = Theta1(:,2:end).^2;
+theta2 = Theta2(:,2:end).^2;
+reg_term = (lambda/2)*(sum(theta1(:))+sum(theta2(:)));         % regularisation term
+
+J = (cost + reg_term)/m;
 
 
+% Back-Propagation
+
+d3 = a3 - y_vec;
+
+d2 = (d3*Theta2(:,2:end)).*sigmoidGradient(z2);
+% size(d2)
+
+D1 = d2'*a1;%(:,2:end);
+Theta1_grad = (D1+[ zeros(size(Theta1,1),1) lambda*Theta1(:,2:end) ])/m;
+
+D2 = d3'*a2;%(:,2:end);
+Theta2_grad = (D2+[ zeros(size(Theta2,1),1) lambda*Theta2(:,2:end) ])/m;
 
 
-
-
-
-
-
-
+% size(D1)
+% size(D2)
+% grad = [D1(:); D2(:)]
 
 
 
