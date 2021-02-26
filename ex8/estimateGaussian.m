@@ -22,7 +22,10 @@ sigma2 = zeros(n, 1);
 %
 
 
-
+mu = mean(X)';
+% sigma2 = std(X).^2;
+sigma2 = (1/m)*sum((X-mu').^2);
+sigma2 = sigma2';
 
 
 

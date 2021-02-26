@@ -20,8 +20,17 @@ idx = zeros(size(X,1), 1);
 %
 % Note: You can use a for-loop over the examples to compute this.
 %
-
-
+% index = 1;
+for index = 1:size(X,1)
+    x = X(index,:);
+    dist = zeros(1,K);
+    for j = 1:K
+        c = centroids(j,:);
+        dist(j) = norm(c-x);
+    end
+    [~,closestCentroid] = min(dist);
+    idx(index) = closestCentroid;
+end
 
 
 
